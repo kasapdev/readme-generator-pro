@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08090d">
+  <meta name="description" content="Build a polished README.md from a form, with live Markdown preview and shields.io badges — a fast, private, offline README generator.">
+  <title>README Generator — Web Utility Suite</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <header class="topbar container">
+    <a class="brand" href="https://github.com/kasapdev/web-utility-suite" aria-label="Back to Web Utility Suite">
+      <span class="logo" aria-hidden="true">
+        <!-- document / readme icon -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <path d="M14 2v6h6M9 13h6M9 17h6M9 9h1"/>
+        </svg>
+      </span>
+      <span class="col" style="gap:0">
+        <span>README Generator</span>
+        <span class="sub">Web Utility Suite</span>
+      </span>
+    </a>
+    <span class="spacer"></span>
+
+    <button class="btn btn--icon" data-shortcut-help title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="2" y="4" width="20" height="16" rx="2"/>
+        <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M7 16h10"/>
+      </svg>
+    </button>
+    <button class="btn btn--icon" data-theme-toggle title="Toggle theme" aria-label="Toggle theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+      </svg>
+    </button>
+  </header>
+
+  <main class="container">
+    <!-- Toolbar -->
+    <section class="panel toolbar-panel fade-in" aria-label="Toolbar">
+      <div class="toolbar">
+        <div class="toolbar-group">
+          <div class="segmented" role="tablist" aria-label="View mode">
+            <button id="viewPreview" class="is-active" role="tab" aria-selected="true" type="button">Preview</button>
+            <button id="viewMarkdown" role="tab" aria-selected="false" type="button">Markdown</button>
+          </div>
+        </div>
+
+        <span class="spacer hide-sm"></span>
+
+        <div class="toolbar-group">
+          <button id="btnCopy" class="btn btn--sm" title="Copy raw Markdown (Ctrl/Cmd+C)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+          <button id="btnDownload" class="btn btn--sm" title="Download README.md (Ctrl/Cmd+S)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Download
+          </button>
+          <button id="btnReset" class="btn btn--sm btn--ghost" title="Reset the form">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+            Reset
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Two-pane: form + preview -->
+    <section class="editor rise" aria-label="README builder">
+      <!-- Form pane -->
+      <div class="pane panel pane--form">
+        <div class="pane-head">
+          <h2 class="pane-title">Project details</h2>
+        </div>
+        <div class="pane-body">
+
+          <div class="field">
+            <label for="fProjectName">Project name</label>
+            <input type="text" id="fProjectName" placeholder="My Awesome Project" autocomplete="off">
+          </div>
+
+          <div class="field">
+            <label for="fTagline">One-line description / tagline</label>
+            <input type="text" id="fTagline" placeholder="A short, punchy summary of what this does." autocomplete="off">
+          </div>
+
+          <fieldset class="field-group">
+            <legend>Badges</legend>
+
+            <label class="check">
+              <span class="switch"><input type="checkbox" id="bLicense"><span class="track"></span><span class="thumb"></span></span>
+              <span class="secondary">License</span>
+            </label>
+            <div class="sub-row" id="licenseRow">
+              <select id="fLicense" aria-label="License">
+                <option value="MIT">MIT</option>
+                <option value="Apache-2.0">Apache-2.0</option>
+                <option value="GPL-3.0">GPL-3.0</option>
+                <option value="BSD-3-Clause">BSD-3-Clause</option>
+                <option value="ISC">ISC</option>
+                <option value="Unlicense">Unlicense</option>
+                <option value="MPL-2.0">MPL-2.0</option>
+              </select>
+            </div>
+
+            <label class="check">
+              <span class="switch"><input type="checkbox" id="bBuild"><span class="track"></span><span class="thumb"></span></span>
+              <span class="secondary">Build status (static placeholder)</span>
+            </label>
+
+            <label class="check">
+              <span class="switch"><input type="checkbox" id="bVersion"><span class="track"></span><span class="thumb"></span></span>
+              <span class="secondary">Version</span>
+            </label>
+            <div class="sub-row" id="versionRow">
+              <input type="text" id="fVersion" value="1.0.0" placeholder="1.0.0" autocomplete="off">
+            </div>
+
+            <label class="check">
+              <span class="switch"><input type="checkbox" id="bLanguage"><span class="track"></span><span class="thumb"></span></span>
+              <span class="secondary">Language</span>
+            </label>
+            <div class="sub-row" id="languageRow">
+              <input type="text" id="fLanguage" value="JavaScript" placeholder="JavaScript" autocomplete="off">
+            </div>
+          </fieldset>
+
+          <div class="field">
+            <label for="fInstall">Install command</label>
+            <input type="text" id="fInstall" placeholder="npm install my-package" autocomplete="off" class="mono">
+          </div>
+
+          <div class="field">
+            <div class="row between center">
+              <label for="fUsage">Usage example</label>
+              <select id="fUsageLang" aria-label="Code fence language" class="btn--sm">
+                <option value="bash">bash</option>
+                <option value="js">js</option>
+                <option value="python">python</option>
+                <option value="text">text</option>
+              </select>
+            </div>
+            <textarea id="fUsage" class="mono" rows="5" spellcheck="false" placeholder="const foo = require('my-package');&#10;foo.doThing();"></textarea>
+          </div>
+
+          <fieldset class="field-group">
+            <legend>Features</legend>
+            <div id="featureRows" class="feature-rows"></div>
+            <button id="btnAddFeature" class="btn btn--sm btn--ghost" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+              Add feature
+            </button>
+          </fieldset>
+
+          <label class="check">
+            <span class="switch"><input type="checkbox" id="fContributing"><span class="track"></span><span class="thumb"></span></span>
+            <span class="secondary">Include Contributing section</span>
+          </label>
+
+          <label class="check">
+            <span class="switch"><input type="checkbox" id="fLicenseSection"><span class="track"></span><span class="thumb"></span></span>
+            <span class="secondary">Include License section</span>
+          </label>
+
+        </div>
+      </div>
+
+      <!-- Output pane -->
+      <div class="pane panel pane--output">
+        <div class="pane-head">
+          <h2 class="pane-title">Output</h2>
+          <span id="outputStats" class="muted pane-meta mono"></span>
+        </div>
+
+        <div class="output-scroll">
+          <div id="previewPane" class="markdown-preview"></div>
+          <pre id="markdownPane" class="output-code mono" hidden><code id="markdownCode"></code></pre>
+
+          <!-- Empty state -->
+          <div id="emptyState" class="empty output-empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <path d="M14 2v6h6M9 13h6M9 17h6"/>
+            </svg>
+            <p>Fill in a project name to start building your README.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer container">
+    Part of the <a href="https://github.com/kasapdev/web-utility-suite">Web Utility Suite</a> · MIT Licensed
+  </footer>
+
+  <!-- Shortcuts help modal -->
+  <div id="helpBackdrop" class="modal-backdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+      <div class="row between center" style="margin-bottom:var(--space-4)">
+        <h3 id="helpTitle" style="margin:0">Keyboard shortcuts</h3>
+        <button id="helpClose" class="btn btn--icon btn--ghost" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <table class="shortcut-table">
+        <tbody id="shortcutRows"></tbody>
+      </table>
+      <p class="muted" style="margin:var(--space-4) 0 0;font-size:13px">Tip: <kbd>mod</kbd> means <kbd>Ctrl</kbd> on Windows/Linux and <kbd>⌘</kbd> on macOS.</p>
+    </div>
+  </div>
+
+  <script src="assets/js/core.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

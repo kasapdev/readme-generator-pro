@@ -162,6 +162,20 @@
     if (key === 'space') key = ' ';
     return pressed === key;
   }
+  /* True if the user currently has text selected -- inside a focused
+     input/textarea, or anywhere else on the page. Used to avoid hijacking
+     the native copy shortcut when that's what the user actually wants. */
+  function hasActiveSelection(target) {
+    var tag = (target && target.tagName) ? target.tagName.toLowerCase() : '';
+    if (tag === 'input' || tag === 'textarea') {
+      try { return target.selectionStart !== target.selectionEnd; } catch (e) { /* some input types disallow selection props */ }
+    }
+    try {
+      var sel = window.getSelection && window.getSelection();
+      return !!(sel && String(sel).length > 0);
+    } catch (e) { return false; }
+  }
+
   document.addEventListener('keydown', function (e) {
     var tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
     var typing = tag === 'input' || tag === 'textarea' || tag === 'select' || (e.target && e.target.isContentEditable);
@@ -170,7 +184,15 @@
       /* Always allow combos that use a modifier; bare keys ignored while typing */
       var usesMod = /ctrl|cmd|mod|alt/.test(s.combo.toLowerCase());
       if (typing && !usesMod) continue;
-      if (comboMatches(e, s.combo)) { e.preventDefault(); s.handler(e); return; }
+      if (comboMatches(e, s.combo)) {
+        /* Don't steal a copy shortcut while the user has text selected --
+           let the browser copy what's actually highlighted instead of
+           silently replacing it with the app's own copy action. */
+        if (/(^|\+)c$/.test(s.combo.toLowerCase()) && hasActiveSelection(e.target)) continue;
+        e.preventDefault();
+        s.handler(e);
+        return;
+      }
     }
   });
 
